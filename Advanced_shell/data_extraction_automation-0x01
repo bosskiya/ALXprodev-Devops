@@ -1,0 +1,18 @@
+#!/bin/bash
+
+FILE="data.json"
+
+name=$(jq -r '.name' "$FILE")
+height=$(jq -r '.height' "$FILE")
+weight=$(jq -r '.weight' "$FILE")
+type=$(jq -r '.types[0].type.name' "$FILE")
+
+height_m=$(echo "$height / 10" | bc)
+
+weight_kg=$(echo "$weight / 10" | bc)
+
+formatted_output=$(echo "$name is of type $type, weighs ${weight_kg}kg, and is ${height_m}m tall." | \ awk '{print toupper(substr($0, 1, 1)) substr($0, 2)}')
+
+final_output=$(echo "$formatted_output" | sed -r 's/\b([a-z])/\u\1/g')
+
+echo "[$final_output]"
