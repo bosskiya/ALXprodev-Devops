@@ -1,18 +1,19 @@
 #!/bin/bash
 
-FILE="data.json"
+file_path="data.json"
+if [ ! -f "$file_path" ]; then
+    echo "File $file_path does not exist."
+    exit 1
+fi
 
-name=$(jq -r '.name' "$FILE")
-height=$(jq -r '.height' "$FILE")
-weight=$(jq -r '.weight' "$FILE")
-type=$(jq -r '.types[0].type.name' "$FILE")
+name=$(jq -r '.name' "$file_path")
+type=$(jq -r '.types[0].type.name' "$file_path")
+height=$(jq -r '.height' "$file_path")
+weight=$(jq -r '.weight' "$file_path")
+formatted_height=$(echo "$height" | awk '{printf "%.1f", $1 / 10}')
+formatted_weight=$(echo "$weight" | awk '{printf "%.0f", $1 / 10}')
 
-height_m=$(echo "$height / 10" | bc)
+name=$(echo "$name" | sed 's/.*/\u&/')
+type=$(echo "$type" | sed 's/.*/\u&/')
 
-weight_kg=$(echo "$weight / 10" | bc)
-
-formatted_output=$(echo "$name is of type $type, weighs ${weight_kg}kg, and is ${height_m}m tall." | \ awk '{print toupper(substr($0, 1, 1)) substr($0, 2)}')
-
-final_output=$(echo "$formatted_output" | sed -r 's/\b([a-z])/\u\1/g')
-
-echo "[$final_output]"
+echo "$name is of type $type, weighs ${formatted_weight}kg, and is ${formatted_height}m tall."
